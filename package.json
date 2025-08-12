@@ -1,0 +1,21 @@
+{
+  "name": "capital-gains",
+  "version": "0.1.0",
+  "description": "Resolution for Nubank challenge \"Capital Gains\"",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "find . -name \"*.test.ts\" -exec node --import tsx --test {} \\;"
+  },
+  "devDependencies": {
+    "@tsconfig/node-lts": "^22.0.2",
+    "@tsconfig/node-ts": "^23.6.1",
+    "@tsconfig/node22": "^22.0.2",
+    "@types/node": "^24.2.1",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  }
+}
