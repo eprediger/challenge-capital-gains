@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import test, { describe } from 'node:test';
-import { calculateWeightedAveragePrice, Operation } from '../src/weighted-average-price.js';
+import { bookOperations, Operation } from '../src/portfolio-bookkeeper.js';
 
 describe('Weighted Average Price', () => {
   test("for one operation should be the unit-cost", () => {
@@ -12,7 +12,9 @@ describe('Weighted Average Price', () => {
       }
     ]
 
-    const actualPrice = calculateWeightedAveragePrice(operations);
+    const portfolio = bookOperations(operations);
+
+    const actualPrice = portfolio.weightedAveragePrice;
     const expectedPrice: number = 20.0;
 
     assert.strictEqual(actualPrice, expectedPrice, `Actual price (${actualPrice}) != Expected price (${expectedPrice}) `)
@@ -37,11 +39,11 @@ describe('Weighted Average Price', () => {
       }
     ]
 
-    const actualPrice = calculateWeightedAveragePrice(operations);
+    const portfolio = bookOperations(operations);
+
+    const actualPrice = portfolio.weightedAveragePrice;
     const expectedPrice: number = 15.0;
 
     assert.strictEqual(actualPrice, expectedPrice, `Actual price (${actualPrice}) != Expected price (${expectedPrice}) `);
   })
 });
-
-
