@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Attach to Docker Node",
+            "type": "node",
+            "request": "attach",
+            "address": "localhost", // Of the Docker host
+            "port": 9229,
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/app", // Of the project inside the container
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+        },
+    ]
+}

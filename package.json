@@ -8,7 +8,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "test": "find . -name \"*.test.ts\" -exec node --import tsx --test {} \\;"
+    "test": "node --import tsx --test --experimental-test-coverage",
+    "test:debug": "node --inspect-brk=0.0.0.0:9229 --import tsx --test"
   },
   "devDependencies": {
     "@tsconfig/node-lts": "^22.0.2",
