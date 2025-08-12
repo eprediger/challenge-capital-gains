@@ -7,20 +7,20 @@ export type Operation = {
 
 // State representing the current portfolio
 export type PortfolioState = {
-    readonly quantity: number;
-    readonly weightedAveragePrice: number;
-    readonly operations: Operation[];
+    readonly lastOperationProfit: number;
     readonly losses: number;
     readonly netProfit: number;
+    readonly quantity: number;
+    readonly weightedAveragePrice: number;
 }
 
 // Initial empty portfolio state
 const INITIAL_STATE: PortfolioState = {
+    lastOperationProfit: 0,
     losses: 0,
     netProfit: 0,
     quantity: 0,
     weightedAveragePrice: 0,
-    operations: [],
 }
 
 /**
@@ -36,9 +36,9 @@ const bookBuyOperation = (state: PortfolioState, operation: Operation): Portfoli
 
     return {
         ...state,
+        lastOperationProfit: 0,
         quantity: updatedQuantity,
         weightedAveragePrice: updatedWeightedAveragePrice,
-        operations: [...state.operations, operation]
     }
 }
 
@@ -50,30 +50,30 @@ const bookBuyOperation = (state: PortfolioState, operation: Operation): Portfoli
  * @returns An updated PortfolioState
  */
 const bookSellOperation = (state: PortfolioState, operation: Operation): PortfolioState => {
-    // const totalSoldAmount = operation.quantity * operation["unit-cost"];
+    const grossOperationProfit = operation.quantity * operation["unit-cost"];
     const operationNetResult = (operation["unit-cost"] - state.weightedAveragePrice) * operation.quantity;
     const newQuantity = state.quantity - operation.quantity;
 
-    // if (operationNetResult < 0) {
-    //     const newLosses = state.losses + Math.abs(operationNetResult)
+    if (operationNetResult < 0) {
+        const newLosses = state.losses + Math.abs(operationNetResult)
 
-    //     return {
-    //         ...state,
-    //         quantity: newQuantity,
-    //         losses: newLosses,
-    //         operations: [...state.operations, operation]
-    //     }
-    // }
+        return {
+            ...state,
+            lastOperationProfit: grossOperationProfit,
+            quantity: newQuantity,
+            losses: newLosses,
+        }
+    }
 
     const netProfit = Math.max(0, operationNetResult - state.losses);
     const remainingLoss = Math.max(0, state.losses - operationNetResult)
 
     return {
         ...state,
+        lastOperationProfit: grossOperationProfit,
         netProfit,
         losses: remainingLoss,
         quantity: newQuantity,
-        operations: [...state.operations, operation]
     }
 }
 

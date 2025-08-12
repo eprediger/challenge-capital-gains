@@ -9,15 +9,25 @@ export type Tax = {
 }
 
 const INITIAL_PORTFOLIO_STATE: PortfolioState = {
+    lastOperationProfit: 0,
     losses: 0,
     netProfit: 0,
     quantity: 0,
     weightedAveragePrice: 0,
-    operations: [],
 };
 
-const TAX_RATE: number = 0.2 as const;
-const NON_TAXABLE_MINIMUM: number = 20_000 as const;
+
+const sellOperationTax = (state: PortfolioState, nextState: PortfolioState): number => {
+    const TAX_RATE: number = 0.2 as const;
+    const TAXABLE_MINIMUM: number = 20_000 as const;
+
+    if (nextState.losses > state.losses || nextState.lastOperationProfit <= TAXABLE_MINIMUM) {
+        return 0;
+    }
+
+    return nextState.netProfit * TAX_RATE;
+}
+
 
 function calculateOperationTax(state: PortfolioState, operation: Operation): [PortfolioState, Tax] {
     const newState = bookOperation(state, operation)
@@ -25,7 +35,7 @@ function calculateOperationTax(state: PortfolioState, operation: Operation): [Po
     if (operation.operation === "buy") {
         return [newState, { tax: 0 }]
     } else {
-        return [newState, { tax: newState.netProfit * TAX_RATE }]
+        return [newState, { tax: sellOperationTax(state, newState) }]
     }
 }
 

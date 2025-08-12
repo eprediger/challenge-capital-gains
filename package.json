@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc",
     "test": "node --import tsx --test --experimental-test-coverage",
+    "test:only": "node --import tsx --test-only",
     "test:debug": "node --inspect-brk=0.0.0.0:9229 --import tsx --test"
   },
   "devDependencies": {
