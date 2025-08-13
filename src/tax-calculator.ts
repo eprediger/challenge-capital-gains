@@ -16,12 +16,16 @@ const INITIAL_PORTFOLIO_STATE: PortfolioState = {
     weightedAveragePrice: 0,
 };
 
+export const isTaxFree = (amount: number): boolean => {
+    const TAXABLE_MINIMUM: number = 20_000 as const;
+
+    return amount <= TAXABLE_MINIMUM
+}
 
 const sellOperationTax = (state: PortfolioState, nextState: PortfolioState): number => {
     const TAX_RATE: number = 0.2 as const;
-    const TAXABLE_MINIMUM: number = 20_000 as const;
 
-    if (nextState.losses > state.losses || nextState.lastOperationProfit <= TAXABLE_MINIMUM) {
+    if (nextState.losses > state.losses || isTaxFree(nextState.lastOperationProfit)) {
         return 0;
     }
 
@@ -29,7 +33,7 @@ const sellOperationTax = (state: PortfolioState, nextState: PortfolioState): num
 }
 
 
-function calculateOperationTax(state: PortfolioState, operation: Operation): [PortfolioState, Tax] {
+const calculateOperationTax = (state: PortfolioState, operation: Operation): [PortfolioState, Tax] => {
     const newState = bookOperation(state, operation)
 
     if (operation.operation === "buy") {

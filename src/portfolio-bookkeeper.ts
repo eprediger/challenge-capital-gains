@@ -1,3 +1,5 @@
+import { isTaxFree } from "./tax-calculator.ts";
+
 // Immutable type representing an operation
 export type Operation = {
     readonly "operation": "buy" | "sell";
@@ -54,8 +56,10 @@ const bookSellOperation = (state: PortfolioState, operation: Operation): Portfol
     const operationNetResult = (operation["unit-cost"] - state.weightedAveragePrice) * operation.quantity;
     const newQuantity = state.quantity - operation.quantity;
 
-    if (operationNetResult < 0) {
-        const newLosses = state.losses + Math.abs(operationNetResult)
+    if (operationNetResult <= 0 || isTaxFree(grossOperationProfit)) {
+        let newLosses = operationNetResult <= 0
+            ? state.losses + Math.abs(operationNetResult)
+            : state.losses;
 
         return {
             ...state,
