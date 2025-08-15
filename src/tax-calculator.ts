@@ -1,12 +1,9 @@
 import {
-    bookOperation,
-    type Operation,
-    type PortfolioState
+    bookOperation
 } from "./portfolio-bookkeeper.ts";
-
-export type Tax = {
-    "tax": number
-}
+import { type PortfolioState } from "./application/domain/portfolio-state.ts";
+import { type Operation } from "./application/domain/operation.ts";
+import type { Tax } from "./application/domain/tax.ts";
 
 const INITIAL_PORTFOLIO_STATE: PortfolioState = {
     lastOperationProfit: 0,

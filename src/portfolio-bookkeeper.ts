@@ -1,29 +1,6 @@
+import { CreatePortfolio, type PortfolioState } from "./application/domain/portfolio-state.ts";
+import type { Operation } from "./application/domain/operation.ts";
 import { isTaxFree } from "./tax-calculator.ts";
-
-// Immutable type representing an operation
-export type Operation = {
-    readonly "operation": "buy" | "sell";
-    readonly "unit-cost": number;
-    readonly "quantity": number;
-};
-
-// State representing the current portfolio
-export type PortfolioState = {
-    readonly lastOperationProfit: number;
-    readonly losses: number;
-    readonly netProfit: number;
-    readonly quantity: number;
-    readonly weightedAveragePrice: number;
-}
-
-// Initial empty portfolio state
-const INITIAL_STATE: PortfolioState = {
-    lastOperationProfit: 0,
-    losses: 0,
-    netProfit: 0,
-    quantity: 0,
-    weightedAveragePrice: 0,
-}
 
 /**
  * Update the Portfolio State given a new buy operation
@@ -88,4 +65,4 @@ export const bookOperation = (state: PortfolioState, operation: Operation): Port
 
 export const bookOperations = (operations: readonly Operation[]): PortfolioState =>
     operations
-        .reduce(bookOperation, INITIAL_STATE);
+        .reduce(bookOperation, CreatePortfolio());

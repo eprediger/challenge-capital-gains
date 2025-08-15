@@ -1,6 +1,8 @@
 import assert from 'node:assert';
 import test, { describe } from 'node:test';
-import { bookOperations, Operation } from '../src/portfolio-bookkeeper.js';
+
+import { bookOperations } from '../src/portfolio-bookkeeper.js';
+import { Operation } from '../src/application/domain/operation.js';
 
 describe('Weighted Average Price', () => {
   test("for one operation should be the unit-cost", () => {
