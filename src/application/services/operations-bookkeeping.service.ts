@@ -1,6 +1,8 @@
-import { CreatePortfolio, type PortfolioState } from "./application/domain/portfolio-state.ts";
-import type { Operation } from "./application/domain/operation.ts";
-import { isTaxFree } from "./tax-calculator.ts";
+import { roundToTwoDecimals, type Operation } from "../domain/operation.ts";
+import { CreatePortfolio, type PortfolioState } from "../domain/portfolio-state.ts";
+import type { OperationsBookkeeper } from "../ports/operations-booking-use-case.ts";
+import { IsTaxFree } from "./tax-calculator.service.ts";
+
 
 /**
  * Update the Portfolio State given a new buy operation
@@ -11,7 +13,7 @@ import { isTaxFree } from "./tax-calculator.ts";
  */
 const bookBuyOperation = (state: PortfolioState, operation: Operation): PortfolioState => {
     const updatedQuantity = state.quantity + operation.quantity;
-    const updatedWeightedAveragePrice = ((state.quantity * state.weightedAveragePrice) + (operation.quantity * operation["unit-cost"])) / updatedQuantity
+    const updatedWeightedAveragePrice = roundToTwoDecimals(((state.quantity * state.weightedAveragePrice) + (operation.quantity * operation["unit-cost"])) / updatedQuantity)
 
     return {
         ...state,
@@ -33,21 +35,21 @@ const bookSellOperation = (state: PortfolioState, operation: Operation): Portfol
     const operationNetResult = (operation["unit-cost"] - state.weightedAveragePrice) * operation.quantity;
     const newQuantity = state.quantity - operation.quantity;
 
-    if (operationNetResult <= 0 || isTaxFree(grossOperationProfit)) {
+    if (operationNetResult <= 0 || IsTaxFree(grossOperationProfit)) {
         let newLosses = operationNetResult <= 0
             ? state.losses + Math.abs(operationNetResult)
             : state.losses;
 
         return {
             ...state,
-            lastOperationProfit: grossOperationProfit,
+            lastOperationProfit: roundToTwoDecimals(grossOperationProfit),
             quantity: newQuantity,
-            losses: newLosses,
+            losses: roundToTwoDecimals(newLosses),
         }
     }
 
-    const netProfit = Math.max(0, operationNetResult - state.losses);
-    const remainingLoss = Math.max(0, state.losses - operationNetResult)
+    const netProfit = roundToTwoDecimals(Math.max(0, operationNetResult - state.losses));
+    const remainingLoss = roundToTwoDecimals(Math.max(0, state.losses - operationNetResult));
 
     return {
         ...state,
@@ -58,11 +60,13 @@ const bookSellOperation = (state: PortfolioState, operation: Operation): Portfol
     }
 }
 
-export const bookOperation = (state: PortfolioState, operation: Operation): PortfolioState =>
+const bookOperation = (state: PortfolioState, operation: Operation): PortfolioState =>
     operation.operation === "buy" ?
         bookBuyOperation(state, operation)
         : bookSellOperation(state, operation)
 
-export const bookOperations = (operations: readonly Operation[]): PortfolioState =>
-    operations
-        .reduce(bookOperation, CreatePortfolio());
+
+export const CreateOperationsBookkeeper = (): OperationsBookkeeper => ({
+    state: CreatePortfolio(),
+    bookOperation: bookOperation
+})

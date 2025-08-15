@@ -1,7 +1,10 @@
-import test, { describe, it } from "node:test";
 import assert from "node:assert";
-import { Operation } from "../src/portfolio-bookkeeper";
-import { calculateTaxes, Tax } from "../src/tax-calculator";
+import test, { beforeEach, describe, it } from "node:test";
+import { Operation } from "../../../src/application/domain/operation";
+import { Tax } from "../../../src/application/domain/tax";
+import { OperationsBookkeeper } from "../../../src/application/ports/operations-booking-use-case";
+import { CreateOperationsBookkeeper } from "../../../src/application/services/operations-bookkeeping.service";
+import { calculateTaxes } from "../../../src/application/services/tax-calculator.service";
 
 type OperationTestCase = {
     operations: Operation[],
@@ -9,6 +12,12 @@ type OperationTestCase = {
 }
 
 describe("Tax calculator", () => {
+    let operationsBook: OperationsBookkeeper;
+
+    beforeEach(() => {
+        operationsBook = CreateOperationsBookkeeper()
+    })
+
     describe("Given a buy operation", () => {
         const buyOperation: Operation = { "operation": "buy", "unit-cost": 10.00, "quantity": 10000 };
 
@@ -18,7 +27,7 @@ describe("Tax calculator", () => {
             ]
             const operations: Operation[] = [buyOperation]
 
-            const actualTaxes = calculateTaxes(operations)
+            const actualTaxes = calculateTaxes(operations, operationsBook)
 
             assert.deepStrictEqual(actualTaxes, expectedTaxes)
         })
@@ -50,7 +59,7 @@ describe("Tax calculator", () => {
 
         testCases.forEach(({ operations, expectedTaxes }) =>
             test("should return the taxes", () => {
-                const actualTaxes = calculateTaxes(operations);
+                const actualTaxes = calculateTaxes(operations, operationsBook);
 
                 assert.deepStrictEqual(actualTaxes, expectedTaxes)
             })
@@ -201,7 +210,7 @@ describe("Tax calculator", () => {
 
         testCases.forEach(({ operations, expectedTaxes }, i) =>
             test(`Case #${i + 1}`, () => {
-                const actualTaxes = calculateTaxes(operations);
+                const actualTaxes = calculateTaxes(operations, operationsBook);
 
                 assert.deepStrictEqual(actualTaxes, expectedTaxes)
             })

@@ -1,10 +1,23 @@
 import assert from 'node:assert';
-import test, { describe } from 'node:test';
+import test, { beforeEach, describe } from 'node:test';
 
-import { bookOperations } from '../src/portfolio-bookkeeper.js';
-import { Operation } from '../src/application/domain/operation.js';
+import { Operation } from '../../../src/application/domain/operation';
+import { OperationsBookkeeper } from '../../../src/application/ports/operations-booking-use-case';
+import { CreateOperationsBookkeeper } from "../../../src/application/services/operations-bookkeeping.service";
+
+const bookOperations = (operations: readonly Operation[], operationsBook: OperationsBookkeeper): void => {
+  for (const operation of operations) {
+    operationsBook.state = operationsBook.bookOperation(operationsBook.state, operation)
+  }
+}
 
 describe('Weighted Average Price', () => {
+  let operationsBook: OperationsBookkeeper;
+
+  beforeEach(() => {
+    operationsBook = CreateOperationsBookkeeper()
+  })
+
   test("for one operation should be the unit-cost", () => {
     const operations: Operation[] = [
       {
@@ -14,9 +27,9 @@ describe('Weighted Average Price', () => {
       }
     ]
 
-    const portfolio = bookOperations(operations);
+    bookOperations(operations, operationsBook);
 
-    const actualPrice = portfolio.weightedAveragePrice;
+    const actualPrice = operationsBook.state.weightedAveragePrice;
     const expectedPrice: number = 20.0;
 
     assert.strictEqual(actualPrice, expectedPrice, `Actual price (${actualPrice}) != Expected price (${expectedPrice}) `)
@@ -41,9 +54,9 @@ describe('Weighted Average Price', () => {
       }
     ]
 
-    const portfolio = bookOperations(operations);
+    bookOperations(operations, operationsBook);;
 
-    const actualPrice = portfolio.weightedAveragePrice;
+    const actualPrice = operationsBook.state.weightedAveragePrice;
     const expectedPrice: number = 15.0;
 
     assert.strictEqual(actualPrice, expectedPrice, `Actual price (${actualPrice}) != Expected price (${expectedPrice}) `);
