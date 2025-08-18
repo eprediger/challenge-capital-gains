@@ -26,5 +26,7 @@ From VSCode/Cursor:
 
 ## CLI Execution
 
-- Build Image: `$ docker build -t capital-gains:0.1.0 .`
-- Run: `$ docker run --rm capital-gains`
+- Build Image: `$ docker build -t capital-gains -f Dockerfile.prod .`
+- Run: `$ cat <operations-file.txt> | docker run --rm -i capital-gains`
+
+  or: `$ docker run --rm -i capital-gains < <operations-file.txt>`

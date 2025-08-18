@@ -35,6 +35,10 @@
     // "moduleDetection": "force",
     // "skipLibCheck": true,
   },
+  "baseUrl": ".",
+  "paths": {
+    "@/*": [ "src/*" ],
+  },
   "extends": [
     "@tsconfig/node22/tsconfig.json",
     "@tsconfig/node-ts/tsconfig.json"
@@ -42,5 +46,9 @@
   "include": [
     "src/**/*",
     //  "tests/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }
