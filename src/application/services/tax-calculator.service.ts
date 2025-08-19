@@ -2,6 +2,7 @@ import { roundToTwoDecimals, type Operation } from "../domain/operation.ts";
 import type { Tax } from "../domain/tax.ts";
 import type { OperationsBookkeeper } from "../ports/operations-booking-use-case.ts";
 import type { TaxCalculatorUseCase } from "../ports/tax-calculator-use-case.ts";
+import { CreateOperationsBookkeeper } from "./operations-bookkeeping.service.ts";
 
 
 const calculateOperationTax = (operation: Operation, bookkeeper: OperationsBookkeeper): Tax => {
@@ -25,6 +26,8 @@ const calculateOperationTax = (operation: Operation, bookkeeper: OperationsBookk
 export const calculateTaxes = (operations: readonly Operation[], bookkeeper: OperationsBookkeeper): readonly Tax[] =>
     operations.map(op => calculateOperationTax(op, bookkeeper), [])
 
-export const CreateTaxCalculator = (operationsBookkeeper: OperationsBookkeeper): TaxCalculatorUseCase =>
-    (operations: readonly Operation[]): readonly Tax[] =>
-        calculateTaxes(operations, operationsBookkeeper)
+export const CreateTaxCalculator = (): TaxCalculatorUseCase =>
+    (operations: readonly Operation[]): readonly Tax[] => {
+        const operationsBookkeeper = CreateOperationsBookkeeper();
+        return calculateTaxes(operations, operationsBookkeeper)
+    }

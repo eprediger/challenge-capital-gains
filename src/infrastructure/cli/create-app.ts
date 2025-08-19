@@ -44,7 +44,7 @@ export const CreateApp = (): Application => {
 }
 
 const CreateAppConfiguration = (): Config => ({
-    useCase: CreateTaxCalculator(CreateOperationsBookkeeper()),
+    useCase: CreateTaxCalculator(),
     parser: CreateOperationParser(),
     formatter: CreateTaxFormatter(),
     inputReader: CreateInputReader(),
