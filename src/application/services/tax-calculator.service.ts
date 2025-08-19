@@ -1,35 +1,18 @@
 import { roundToTwoDecimals, type Operation } from "../domain/operation.ts";
-import type { PortfolioState } from "../domain/portfolio-state.ts";
 import type { Tax } from "../domain/tax.ts";
 import type { OperationsBookkeeper } from "../ports/operations-booking-use-case.ts";
 import type { TaxCalculatorUseCase } from "../ports/tax-calculator-use-case.ts";
 
 
-export const IsTaxFree = (amount: number): boolean => {
-    const TAXABLE_MINIMUM: number = 20_000 as const;
-
-    return amount <= TAXABLE_MINIMUM
-}
-
-const sellOperationTax = (state: PortfolioState, nextState: PortfolioState): number => {
-    const TAX_RATE: number = 0.2 as const;
-
-    if (nextState.losses > state.losses || IsTaxFree(nextState.lastOperationProfit)) {
-        return 0;
-    }
-
-    return roundToTwoDecimals(nextState.netProfit * TAX_RATE);
-}
-
-
 const calculateOperationTax = (operation: Operation, bookkeeper: OperationsBookkeeper): Tax => {
-    const initialState = bookkeeper.state
-    bookkeeper.state = bookkeeper.bookOperation(bookkeeper.state, operation)
+    const TAX_RATE: number = 0.2 as const;
+    const TAXABLE_MINIMUM: number = 20_000 as const;
+    bookkeeper.bookOperation(operation, TAXABLE_MINIMUM)
 
-    if (operation.operation === "buy") {
+    if (bookkeeper.portfolio.getLastOperationProfit() <= 0 || operation.isTaxFree(TAXABLE_MINIMUM)) {
         return { tax: 0 }
     } else {
-        return { tax: sellOperationTax(initialState, bookkeeper.state) }
+        return { tax: roundToTwoDecimals(bookkeeper.portfolio.getNetProfit() * TAX_RATE) }
     }
 }
 

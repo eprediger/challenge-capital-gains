@@ -4,4 +4,6 @@ coverage/
 
 .vscode/
 
+operations/
+
 *.zip

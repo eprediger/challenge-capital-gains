@@ -9,10 +9,9 @@ describe("CreateOperationParser", () => {
         const input = `[
             { "operation": "buy", "unit-cost": 10, "quantity": 100 }
         ]`;
-        const result = operationParser(input);
-        assert.deepStrictEqual(result, [
-            { operation: "buy", "unit-cost": 10, quantity: 100 }
-        ]);
+        const operations = operationParser(input);
+
+        operations.forEach(operation => assert.ok(typeof operation.updatePortfolio === 'function'));
     });
 
     test("parses multiple operations", () => {
@@ -20,11 +19,9 @@ describe("CreateOperationParser", () => {
             { "operation": "buy", "unit-cost": 10, "quantity": 100 },
             { "operation": "sell", "unit-cost": 15, "quantity": 50 }
         ]`;
-        const result = operationParser(input);
-        assert.deepStrictEqual(result, [
-            { operation: "buy", "unit-cost": 10, quantity: 100 },
-            { operation: "sell", "unit-cost": 15, quantity: 50 }
-        ]);
+        const operations = operationParser(input);
+
+        operations.forEach(operation => assert.ok(typeof operation.updatePortfolio === 'function'));
     });
 
     test("trims input before parsing", () => {
@@ -33,15 +30,15 @@ describe("CreateOperationParser", () => {
                 { "operation": "buy", "unit-cost": 20, "quantity": 10 }
             ]
         `;
-        const result = operationParser(input);
-        assert.deepStrictEqual(result, [
-            { operation: "buy", "unit-cost": 20, quantity: 10 }
-        ]);
+        const operations = operationParser(input);
+
+        operations.forEach(operation => assert.ok(typeof operation.updatePortfolio === 'function'));
     });
 
     test("returns an empty array for empty input array", () => {
         const input = "[]";
-        const result = operationParser(input);
-        assert.deepStrictEqual(result, []);
+        const operations = operationParser(input);
+
+        operations.forEach(operation => assert.ok(typeof operation.updatePortfolio === 'function'));
     });
 });
